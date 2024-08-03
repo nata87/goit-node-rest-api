@@ -1,5 +1,5 @@
 import { Sequelize } from "sequelize";
-
+import { databaseConfig } from "./config.js";
 const {
   DATABASE_DIALECT,
   DATABASE_USER,
@@ -8,18 +8,7 @@ const {
   DATABASE_HOST,
   DATABASE_PORT,
 } = process.env;
-
-export const databaseConfig = {
-  dialect: DATABASE_DIALECT,
-  username: DATABASE_USER,
-  database: DATABASE_NAME,
-  password: DATABASE_PASSWORD,
-  host: DATABASE_HOST,
-  port: DATABASE_PORT,
-  dialectOptions: {
-    ssl: true,
-  },
-};
+console.log("1", DATABASE_DIALECT);
 
 const sequelize = new Sequelize(databaseConfig);
 
