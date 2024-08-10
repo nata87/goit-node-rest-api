@@ -3,7 +3,7 @@ import morgan from "morgan";
 import cors from "cors";
 import "dotenv/config";
 
-import sequelize from "./db/sequelise.js";
+import sequelize from "./db/sequelize.js";
 
 import contactsRouter from "./routes/contactsRouter.js";
 
@@ -32,4 +32,5 @@ try {
   });
 } catch (error) {
   console.error(error.message);
+  process.exit(1);
 }
