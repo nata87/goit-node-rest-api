@@ -1,7 +1,7 @@
 import sequelize from "../sequelize.js";
 import { DataTypes } from "sequelize";
 
-const Contact = sequelize.define("Contacts", {
+const Contact = sequelize.define("contacts", {
   name: {
     type: DataTypes.STRING,
     allowNull: false,
