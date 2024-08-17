@@ -1,5 +1,5 @@
 import User from "../db/models/User.js";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import HttpError from "../helpers/HttpError.js";
 
@@ -43,6 +43,31 @@ export const login = async (req, res, next) => {
     res.status(201).json({
       token,
       user: { email: newUser.email, subscription: newUser.subscription },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+export const logout = async (req, res, next) => {
+  try {
+    const { user } = req.body;
+    if (!user) {
+      throw HttpError(401, "User does not exist");
+    }
+    user.token = null;
+    await user.save();
+    res.status(204).send();
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getCurrentUser = async (req, res, next) => {
+  try {
+    const { email, subscription } = req.body;
+    res.status(201).json({
+      email,
+      subscription,
     });
   } catch (error) {
     next(error);
