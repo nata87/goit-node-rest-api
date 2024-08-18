@@ -1,7 +1,7 @@
 import User from "../db/models/User.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import HttpError from "../helpers/HttpError.js";
+import { HttpError } from "../helpers/HttpError.js";
 
 export const register = async (req, res, next) => {
   try {
@@ -51,9 +51,9 @@ export const login = async (req, res, next) => {
     });
     user.token = token;
     await user.save();
-    res.status(201).json({
+    res.status(200).json({
       token,
-      user: { email: newUser.email, subscription: newUser.subscription },
+      user: { email: user.email, subscription: user.subscription },
     });
   } catch (error) {
     next(error);
@@ -75,10 +75,16 @@ export const logout = async (req, res, next) => {
 
 export const getCurrentUser = async (req, res, next) => {
   try {
-    const { email, subscription } = req.body;
-    res.status(201).json({
-      email,
-      subscription,
+    const { id } = req.user;
+
+    const user = await User.findByPk(id);
+    if (!user) {
+      throw HttpError(401, "Not authorized");
+    }
+
+    res.status(200).json({
+      email: user.email,
+      subscription: user.subscription,
     });
   } catch (error) {
     next(error);
