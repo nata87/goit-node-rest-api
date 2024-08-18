@@ -6,9 +6,6 @@ const User = sequelize.define("user", {
   password: {
     type: DataTypes.STRING,
     allowNull: false,
-    validate: {
-      length: 6,
-    },
   },
   email: {
     type: DataTypes.STRING,
@@ -30,6 +27,6 @@ const User = sequelize.define("user", {
   },
 });
 
-User.sync({ alter: true });
+//User.sync({ alter: true });
 
 export default User;

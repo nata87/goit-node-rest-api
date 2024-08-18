@@ -3,7 +3,7 @@ import HttpError from "../helpers/HttpError.js";
 import contactsService from "../services/contactsServices.js";
 
 const getAllContacts = async (_, res) => {
-  const contacts = await contactsService.listContacts();
+  const contacts = await contactsService.getContacts();
   return res.json(contacts);
 };
 

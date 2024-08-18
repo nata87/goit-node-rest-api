@@ -1,7 +1,7 @@
 import Contact from "../db/models/Contact.js";
 
-export const getContactById = (id) => Contact.findByPk(id);
-export const updateContact = async (id, data) => {
+const getContactById = (id) => Contact.findByPk(id);
+const updateContact = async (id, data) => {
   const contact = await getContactById(id);
   if (!contact) {
     return null;
@@ -11,7 +11,10 @@ export const updateContact = async (id, data) => {
   });
 };
 
+const getContacts = async () => Contact.findAll();
+
 export default {
   getContactById,
   updateContact,
+  getContacts,
 };
