@@ -61,13 +61,14 @@ export const login = async (req, res, next) => {
 };
 export const logout = async (req, res, next) => {
   try {
-    const { user } = req.body;
+    const { id } = req.user;
+    const user = await User.findByPk(id);
     if (!user) {
-      throw HttpError(401, "User does not exist");
+      throw HttpError(401, "Not authorized");
     }
     user.token = null;
     await user.save();
-    res.status(204).send();
+    res.status(204).json({ message: "User has been logged out successfully." });
   } catch (error) {
     next(error);
   }
