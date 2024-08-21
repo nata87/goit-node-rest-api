@@ -7,7 +7,7 @@ import contactsRouter from "./routes/contactsRouter.js";
 import authRouter from "./routes/authRouter.js";
 
 const app = express();
-
+app.use(express.static("public"));
 app.use(morgan("tiny"));
 app.use(cors());
 app.use(express.json());
@@ -27,6 +27,7 @@ app.use((err, req, res, next) => {
 try {
   await sequelize.authenticate();
   console.log("Database connection successful.");
+  await sequelize.sync({ alter: true });
   app.listen(3000, () => {
     console.log("Server is running. Use our API on port: 3000");
   });
