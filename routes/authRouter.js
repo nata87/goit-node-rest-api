@@ -2,14 +2,18 @@ import { Router } from "express";
 import multer from "multer";
 import validateBody from "../helpers/validateBody.js";
 import authSchema from "../schemas/authSchemas.js";
+import emailSchema from "../schemas/authSchemas.js";
 import {
   getCurrentUser,
   login,
   logout,
   register,
   updateAvatar,
+  verifyUser,
+  resendVerificationEmail,
 } from "../controllers/authControllers.js";
 import authenticate from "../middlewares/authenticate.js";
+import jwt from "jsonwebtoken";
 
 const authRouter = Router();
 
@@ -29,5 +33,9 @@ authRouter.patch(
   upload.single("avatar"),
   updateAvatar
 );
+
+authRouter.post("/verify", validateBody(emailSchema), resendVerificationEmail);
+
+authRouter.get("/verify/:verificationToken", verifyUser);
 
 export default authRouter;

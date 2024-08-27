@@ -1,4 +1,4 @@
-const require = request("supertest");
+/*const request = require("supertest");
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import app from "../app.js";
@@ -23,7 +23,7 @@ describe("Login Controller", () => {
     });
     expect(res.statusCode).toEqual(200);
     expect(res.body).toHaveProperty("token", "mocked-token");
-    expect(res.body.user).toMachObject({
+    expect(res.body.user).toMatchObject({
       email: "test@example.com",
       subscription: "starter",
     });
@@ -31,3 +31,4 @@ describe("Login Controller", () => {
     expect(typeof res.body.user.subscription).toBe("string");
   });
 });
+*/

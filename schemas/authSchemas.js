@@ -6,4 +6,8 @@ const authSchema = new Joi.object({
   password: Joi.string().min(10).required(),
 });
 
-export default authSchema;
+const emailSchema = Joi.object({
+  email: Joi.string().regex(emailRegex).required(),
+});
+
+export default { authSchema, emailSchema };

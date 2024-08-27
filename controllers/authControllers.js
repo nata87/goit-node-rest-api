@@ -5,6 +5,21 @@ import { HttpError } from "../helpers/HttpError.js";
 import gravatar from "gravatar";
 import fs from "fs/promises";
 import path from "path";
+import { nanoid } from "nanoid";
+import nodemailer from "nodemailer";
+
+const { SMTP_HOST, SMTP_PORT, SMTP_SECURE, UKR_NET_FROM, UKR_NET_PASSWORD } =
+  process.env;
+
+const transporter = nodemailer.createTransport({
+  host: SMTP_HOST,
+  port: SMTP_PORT,
+  secure: Boolean(SMTP_SECURE),
+  auth: {
+    user: UKR_NET_FROM,
+    pass: UKR_NET_PASSWORD,
+  },
+});
 
 export const register = async (req, res, next) => {
   try {
@@ -22,11 +37,31 @@ export const register = async (req, res, next) => {
     }
     const avatarURL = gravatar.url(email, { s: "400", r: "g", d: "mm" });
     const hashedPassword = await bcrypt.hash(password, 10);
+    const verificationToken = nanoid();
 
     const newUser = await User.create({
       email,
       password: hashedPassword,
       avatarURL,
+      verificationToken,
+    });
+
+    const verificationLink = `http://localhost:3000/auth/verify/${verificationToken}`;
+    /*
+    res.status(201).json({
+      user: {
+        email: newUser.email,
+        subscription: newUser.subscription,
+        avatarURL: newUser.avatarURL,
+        verificationToken,
+      },
+    });
+*/
+    await transporter.sendMail({
+      from: UKR_NET_FROM,
+      to: email,
+      subject: "Email Verification",
+      html: `<a href="${verificationLink}">Click here to verify your email</a>`,
     });
 
     res.status(201).json({
@@ -36,6 +71,59 @@ export const register = async (req, res, next) => {
         avatarURL: newUser.avatarURL,
       },
     });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verifyUser = async (req, res, next) => {
+  try {
+    const { verificationToken } = req.params;
+
+    const user = await User.findOne({ where: { verificationToken } });
+
+    if (!user) {
+      throw HttpError(404, "User not found");
+    }
+
+    user.verify = true;
+    user.verificationToken = null;
+    await user.save();
+
+    res.status(200).json({ message: "Verification successful" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resendVerificationEmail = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+
+    if (!email) {
+      throw HttpError(400, "Missing required field email");
+    }
+
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      throw HttpError(404, "User not found");
+    }
+
+    if (user.verify) {
+      throw HttpError(400, "Verification has already been passed");
+    }
+
+    const verificationLink = `http://localhost:3000/auth/verify/${user.verificationToken}`;
+
+    await transporter.sendMail({
+      from: UKR_NET_FROM,
+      to: email,
+      subject: "Email Verification",
+      html: `<a href="${verificationLink}">Click here to verify your email</a>`,
+    });
+
+    res.status(200).json({ message: "Verification email sent" });
   } catch (error) {
     next(error);
   }
@@ -54,6 +142,9 @@ export const login = async (req, res, next) => {
     if (!user) {
       throw HttpError(401, "Email or password is wrong");
     }
+    if (!user.verify) {
+      throw HttpError(401, "Email is not verified");
+    }
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       throw HttpError(401, "Email or password is wrong");
@@ -71,6 +162,7 @@ export const login = async (req, res, next) => {
     next(error);
   }
 };
+
 export const logout = async (req, res, next) => {
   try {
     const { id } = req.user;
