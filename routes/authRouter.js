@@ -1,8 +1,7 @@
 import { Router } from "express";
 import multer from "multer";
 import validateBody from "../helpers/validateBody.js";
-import authSchema from "../schemas/authSchemas.js";
-import emailSchema from "../schemas/authSchemas.js";
+import { authSchema, emailSchema } from "../schemas/authSchemas.js";
 import {
   getCurrentUser,
   login,
