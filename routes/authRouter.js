@@ -1,7 +1,8 @@
 import { Router } from "express";
 import multer from "multer";
 import validateBody from "../helpers/validateBody.js";
-import { authSchema, emailSchema } from "../schemas/authSchemas.js";
+import * as schemas from "../schemas/authSchemas.js";
+
 import {
   getCurrentUser,
   login,
@@ -13,6 +14,8 @@ import {
 } from "../controllers/authControllers.js";
 import authenticate from "../middlewares/authenticate.js";
 import jwt from "jsonwebtoken";
+
+const { authSchema, emailSchema } = schemas;
 
 const authRouter = Router();
 

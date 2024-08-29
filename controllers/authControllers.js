@@ -46,7 +46,10 @@ export const register = async (req, res, next) => {
       verificationToken,
     });
 
-    const verificationLink = `http://localhost:3000/auth/verify/${verificationToken}`;
+    const verificationLink = `http://localhost:3000/api/auth/verify/${verificationToken}`;
+
+    console.log(newUser.verificationToken);
+
     /*
     res.status(201).json({
       user: {
@@ -79,6 +82,7 @@ export const register = async (req, res, next) => {
 export const verifyUser = async (req, res, next) => {
   try {
     const { verificationToken } = req.params;
+    console.log("verification token verify user", verificationToken);
 
     const user = await User.findOne({ where: { verificationToken } });
 
